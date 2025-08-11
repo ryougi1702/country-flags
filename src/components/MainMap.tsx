@@ -5,7 +5,6 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Stroke, Style, Fill } from "ol/style";
-import Overlay from "ol/Overlay";
 import CountryHoverOverlay from "./CountryHoverOverlay";
 
 const MainMap = () => {

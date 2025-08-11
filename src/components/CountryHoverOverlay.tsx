@@ -43,10 +43,16 @@ const CountryHoverOverlay = ({ map }: { map: Map | null }) => {
     };
     // Show country name and flag on hover
     map.on("pointermove", pointerMoveHandler);
-
+    const mapContainer = map.getTargetElement();
+    mapContainer?.addEventListener("mouseleave", () => {
+      tooltipRef.current!.style.display = "none";
+    });
     return () => {
       map.un("pointermove", () => {});
       map.removeOverlay(tooltipOverlay);
+      if (mapContainer) {
+        mapContainer.removeEventListener("mouseleave", () => {});
+      }
       tooltipRef.current = null; // Clean up the ref
     };
   }, [map]);

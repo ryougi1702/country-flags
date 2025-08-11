@@ -74,14 +74,24 @@ const CountryHoverOverlay = ({ map }: { map: Map | null }) => {
           zIndex: 10,
         }}
       >
-        {isoA2 && isoA2.length === 2 && (
-          <img
-            src={`https://flagcdn.com/w40/${isoA2.toLowerCase()}.png`}
-            alt={`${name} flag`}
-            style={flagStyle}
-          />
-        )}
-        {name}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {isoA2 && isoA2.length === 2 && (
+            <img
+              // see https://flagpedia.net/download/api
+              // using h60 (height 60px) here
+              src={`https://flagcdn.com/h60/${isoA2.toLowerCase()}.png`}
+              alt={`${name} flag`}
+              style={flagStyle}
+            />
+          )}
+          {name}
+        </div>
       </div>
     </>
   );
@@ -90,7 +100,7 @@ const CountryHoverOverlay = ({ map }: { map: Map | null }) => {
 const flagStyle: React.CSSProperties = {
   verticalAlign: "middle",
   marginRight: "6px",
-  height: 20,
+  height: "60px",
   border: "1px solid #fff",
   borderRadius: 2,
 };

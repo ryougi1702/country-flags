@@ -1,22 +1,27 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import MainMap from "./MainMap";
+import MainMap from "./components/MainMap";
 import { Overlay } from "ol";
 
 function App() {
   const [count, setCount] = useState(0);
 
   // const TestComponent = () => {
+  //   const elRef = useRef<HTMLDivElement>(null);
+
+  //   useEffect(() => {
+  //     if (!elRef.current) return;
   //   const tooltipOverlay = new Overlay({
-  //     element: "<div id='tooltip' style='display:none;'>helloooo</div>",
+  //     element: elRef.current,
   //     offset: [10, 0],
   //     positioning: "bottom-left",
   //     stopEvent: false,
   //   });
-  //   return tooltipOverlay;
-  // }
+
+  //   }, [elRef]);
+  // };
   return (
     <>
       <section>

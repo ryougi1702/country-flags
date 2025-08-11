@@ -11,6 +11,16 @@ const MainMap = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<Map | null>(null);
 
+  const colorMap7 = [
+    "#e6194b", // Red
+    "#3cb44b", // Green
+    "#ffe119", // Yellow
+    "#4363d8", // Blue
+    "#f58231", // Orange
+    "#911eb4", // Purple
+    "#46f0f0", // Cyan
+  ];
+
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -22,15 +32,24 @@ const MainMap = () => {
         // url: "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson",
         format: new GeoJSON(),
       }),
-      style: new Style({
-        fill: new Fill({
-          color: "rgba(255, 255, 255)",
-        }),
-        stroke: new Stroke({
-          color: "#333",
-          width: 1.5,
-        }),
-      }),
+      style: (feature) => {
+        const mapColorCode: number | null = feature.get("mapcolor7"); // theres mapcolor7, 8, 9, 13
+
+        const fillColor =
+          mapColorCode && mapColorCode >= 1 && mapColorCode <= 7
+            ? colorMap7[mapColorCode - 1]
+            : "rgba(255, 255, 255, 0.8)";
+
+        return new Style({
+          fill: new Fill({
+            color: fillColor,
+          }),
+          stroke: new Stroke({
+            color: "#333",
+            width: 1.5,
+          }),
+        });
+      },
     });
 
     // Create the map with only the vector layer (no base map)

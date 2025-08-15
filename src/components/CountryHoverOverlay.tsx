@@ -4,12 +4,13 @@ import type {
   RegionProperties,
   RegionPropertiesKey,
 } from "../types/openDataSoft";
+import type { FeatureLike } from "ol/Feature";
 
 function getRegionProperty<T extends RegionPropertiesKey>(
-  feature: any,
+  feature: FeatureLike | undefined,
   key: T
 ): RegionProperties[T] {
-  return feature.get(key);
+  return feature?.get(key) ?? "";
 }
 
 const CountryHoverOverlay = ({ map }: { map: Map | null }) => {

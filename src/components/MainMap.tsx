@@ -6,14 +6,21 @@ import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Stroke, Style, Fill } from "ol/style";
 import CountryHoverOverlay from "./CountryHoverOverlay";
-import countryCodeColorMapping from "../mappings/colorCodeHSLMapping";
 import colorCodeHSLMapping from "../mappings/colorCodeHSLMapping";
+import SearchArea from "./SearchArea";
+import { createZoomInOn } from "../mapUtils/mapActions";
 // import { defaults } from "ol/interaction/defaults";
 // import DragRotate from "ol/interaction/DragRotate";
 
 const MainMap = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<Map | null>(null);
+  const [searchItems, setSearchItems] = useState<
+    { code: string; name: string }[]
+  >([]);
+  const zoomInOnCallback = useRef<(countryCode: string) => void>(
+    (someString) => {}
+  );
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -64,6 +71,28 @@ const MainMap = () => {
     //   tooltipRef.current!.style.display = "none";
     // });
 
+    vectorLayer.on("change", () => {
+      console.log("vectorLayer changed");
+      const geojsonFeatures = vectorLayer.getSource()?.getFeatures();
+      if (!geojsonFeatures) return;
+      console.log("geojsonFeatures is loaded ", geojsonFeatures.length);
+
+      const countryCodeAndNames = geojsonFeatures
+        .map((f) => ({
+          code: f.get("iso_3166_1_alpha_2_codes"),
+          name: f.get("name"),
+        }))
+        .filter((f) => f.code && f.name); // Filter out the disputed territories, etc.
+      setSearchItems(countryCodeAndNames);
+
+      // Create zoomInOn function
+      console.log("Creating zoomInOn function");
+      const zoomInOn = createZoomInOn(newMap, geojsonFeatures);
+      console.log("zoomInOn function created", zoomInOn);
+      zoomInOnCallback.current = zoomInOn;
+    });
+
+    // // on unload
     return () => {
       newMap.setTarget(undefined);
     };
@@ -71,11 +100,16 @@ const MainMap = () => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "1000px" }}>
+      <SearchArea
+        placeholder="Search..."
+        searchItems={searchItems}
+        zoomInOnCallback={zoomInOnCallback.current}
+      />
       <div
         ref={mapRef}
         style={{
-          width: "100%",
-          height: "1000px",
+          width: "80%",
+          height: "50%",
           border: "1px solid #ccc",
           margin: "20px auto",
         }}

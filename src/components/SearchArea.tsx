@@ -1,18 +1,16 @@
 import Fuse from "fuse.js";
 import React, { useState } from "react";
-import Map from "ol/Map";
-import type { RegionProperties } from "../types/openDataSoft";
 
 interface SearchAreaProps {
   placeholder?: string;
   searchItems: { code: string; name: string }[];
-  zoomInOnCallback: (countryCode: string) => void;
+  goToCountryCallback: (countryCode: string) => void;
 }
 
 const SearchArea: React.FC<SearchAreaProps> = ({
   placeholder = "Search...",
   searchItems,
-  zoomInOnCallback,
+  goToCountryCallback,
 }) => {
   const [query, setQuery] = useState("");
   const [displayResults, setDisplayResults] = useState(false);
@@ -81,7 +79,7 @@ const SearchArea: React.FC<SearchAreaProps> = ({
               onClick={() => {
                 setQuery(country.name);
                 setDisplayResults(false);
-                zoomInOnCallback(country.code);
+                goToCountryCallback(country.code);
               }}
             >
               {country.name}

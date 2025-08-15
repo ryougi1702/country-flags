@@ -8,9 +8,7 @@ import { Stroke, Style, Fill } from "ol/style";
 import CountryHoverOverlay from "./CountryHoverOverlay";
 import colorCodeHSLMapping from "../mappings/colorCodeHSLMapping";
 import SearchArea from "./SearchArea";
-import { createZoomInOn } from "../mapUtils/mapActions";
-// import { defaults } from "ol/interaction/defaults";
-// import DragRotate from "ol/interaction/DragRotate";
+import { createGoToCountry } from "../mapUtils/mapActions";
 
 const MainMap = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -18,9 +16,7 @@ const MainMap = () => {
   const [searchItems, setSearchItems] = useState<
     { code: string; name: string }[]
   >([]);
-  const zoomInOnCallback = useRef<(countryCode: string) => void>(
-    (someString) => {}
-  );
+  const goToCountryCallback = useRef<(countryCode: string) => void>(() => {});
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -31,7 +27,7 @@ const MainMap = () => {
         // For local development, use:
         // url: "/ne_50m_admin_0_countries.geojson",
         // more detailed version
-        url: "world-administrative-boundaries-10%.json",
+        url: "world-administrative-boundaries.geojson",
         // url: "CNTR_RG_01M_2024_4326_2%.geojson",
         // url: "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson",
         format: new GeoJSON(),
@@ -66,11 +62,6 @@ const MainMap = () => {
 
     setMap(newMap);
 
-    // Hide tooltip when mouse leaves the map
-    // mapRef.current.addEventListener("mouseleave", () => {
-    //   tooltipRef.current!.style.display = "none";
-    // });
-
     vectorLayer.on("change", () => {
       console.log("vectorLayer changed");
       const geojsonFeatures = vectorLayer.getSource()?.getFeatures();
@@ -87,9 +78,9 @@ const MainMap = () => {
 
       // Create zoomInOn function
       console.log("Creating zoomInOn function");
-      const zoomInOn = createZoomInOn(newMap, geojsonFeatures);
+      const zoomInOn = createGoToCountry(newMap, geojsonFeatures);
       console.log("zoomInOn function created", zoomInOn);
-      zoomInOnCallback.current = zoomInOn;
+      goToCountryCallback.current = zoomInOn;
     });
 
     // // on unload
@@ -103,7 +94,7 @@ const MainMap = () => {
       <SearchArea
         placeholder="Search..."
         searchItems={searchItems}
-        zoomInOnCallback={zoomInOnCallback.current}
+        goToCountryCallback={goToCountryCallback.current}
       />
       <div
         ref={mapRef}

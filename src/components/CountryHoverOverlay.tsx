@@ -1,6 +1,16 @@
 import { MapBrowserEvent, Overlay, type Map } from "ol";
 import { useEffect, useRef, useState } from "react";
-import { CountryKeys as cKeys } from "../keys";
+import type {
+  RegionProperties,
+  RegionPropertiesKey,
+} from "../types/openDataSoft";
+
+function getRegionProperty<T extends RegionPropertiesKey>(
+  feature: any,
+  key: T
+): RegionProperties[T] {
+  return feature.get(key);
+}
 
 const CountryHoverOverlay = ({ map }: { map: Map | null }) => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -23,10 +33,12 @@ const CountryHoverOverlay = ({ map }: { map: Map | null }) => {
     ) {
       const feature = map.forEachFeatureAtPixel(evt.pixel, (feat) => feat);
       if (feature) {
-        setName(
-          feature.get(cKeys.ADMIN) || feature.get(cKeys.NAME_LONG) || "Unknown"
-        ); // can add options later
-        setIsoA2(feature.get(cKeys.ISO_A2) || "");
+        const name = getRegionProperty(feature, "name") || "Unknown";
+        setName(name);
+        const isoA2 =
+          getRegionProperty(feature, "iso_3166_1_alpha_2_codes") || "";
+        setIsoA2(isoA2);
+
         tooltipOverlay.setPosition(evt.coordinate);
         tooltipRef.current!.style.display = "block";
 

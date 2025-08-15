@@ -6,20 +6,14 @@ import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Stroke, Style, Fill } from "ol/style";
 import CountryHoverOverlay from "./CountryHoverOverlay";
+import countryCodeColorMapping from "../mappings/colorCodeHSLMapping";
+import colorCodeHSLMapping from "../mappings/colorCodeHSLMapping";
+// import { defaults } from "ol/interaction/defaults";
+// import DragRotate from "ol/interaction/DragRotate";
 
 const MainMap = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<Map | null>(null);
-
-  const colorMap7 = [
-    "#e6194b", // Red
-    "#3cb44b", // Green
-    "#ffe119", // Yellow
-    "#4363d8", // Blue
-    "#f58231", // Orange
-    "#911eb4", // Purple
-    "#46f0f0", // Cyan
-  ];
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -28,17 +22,16 @@ const MainMap = () => {
     const vectorLayer = new VectorLayer({
       source: new VectorSource({
         // For local development, use:
-        url: "/ne_50m_admin_0_countries.geojson",
+        // url: "/ne_50m_admin_0_countries.geojson",
+        // more detailed version
+        url: "world-administrative-boundaries-10%.json",
+        // url: "CNTR_RG_01M_2024_4326_2%.geojson",
         // url: "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson",
         format: new GeoJSON(),
       }),
       style: (feature) => {
-        const mapColorCode: number | null = feature.get("mapcolor7"); // theres mapcolor7, 8, 9, 13
-
-        const fillColor =
-          mapColorCode && mapColorCode >= 1 && mapColorCode <= 7
-            ? colorMap7[mapColorCode - 1]
-            : "rgba(255, 255, 255, 0.8)";
+        const colorCode = feature.get("color_code");
+        const fillColor = colorCodeHSLMapping[colorCode];
 
         return new Style({
           fill: new Fill({
@@ -46,7 +39,7 @@ const MainMap = () => {
           }),
           stroke: new Stroke({
             color: "#333",
-            width: 1.5,
+            width: 1.0,
           }),
         });
       },
@@ -61,6 +54,7 @@ const MainMap = () => {
         zoom: 2,
         projection: "EPSG:3857", // Web Mercator projection
       }),
+      // interactions: defaults().extend([new DragRotate()]),
     });
 
     setMap(newMap);
